@@ -2,8 +2,12 @@
 import re
 
 from flask import flash
+from flask_bcrypt import Bcrypt
 
+from flask_app import app
 from flask_app.config.mysqlconnection import connectToMySQL
+
+bcrypt = Bcrypt(app)
 
 class User:
     def __init__(self, data):
@@ -96,5 +100,22 @@ class User:
     
     @staticmethod
     def login_validator(post_data):
-        pass
+        # user is either a user obj or not
+        user = User.get_by_email({"email": post_data["email"]})
+        
+        if not user:
+            flash("Invalid Credentials")
+            return False
+        
+        if not bcrypt.check_password_hash(user.password, post_data["password"]):
+            flash("Invalid Credentials")
+            return False
+            
+        return True
+        
+        
+        
+        
+        
+
     

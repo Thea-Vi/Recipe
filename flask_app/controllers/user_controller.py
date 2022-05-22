@@ -26,11 +26,26 @@ def register():
     user_id = User.create(data)
     
     # assign the user_id to session 
-    #uuid = unique iser id
+    #uuid = unique user id
     # key-value
     session["uuid"] = user_id
     
     return redirect("/dashboard")
+
+
+@app.route("/login", methods = ["POST"])
+def login():
+    if not User.login_validator(request.form):
+        return redirect("/")
+    
+    # if inputs valid, get user from database
+    # user is an object
+    user = User.get_by_id({"email": request.form["email"]})
+
+    # to access the id, use user.id
+    session["uuid"] = user.id
+    return redirect("/dashboard")
+
 
 @app.route("/logout")
 def logout():
