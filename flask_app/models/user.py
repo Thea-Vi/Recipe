@@ -21,7 +21,7 @@ class User:
     @classmethod
     def get_all(cls):
         query = "SELECT * FROM users;"
-        results = connectToMySQL("logregschema").query_db(query)
+        results = connectToMySQL("recipe_schema").query_db(query)
         
         users = []
         for row in results:
@@ -32,7 +32,7 @@ class User:
     @classmethod
     def get_by_email(cls, data):
         query = "SELECT * FROM users WHERE email = %(email)s;"
-        results = connectToMySQL("logregschema").query_db(query,data)
+        results = connectToMySQL("recipe_schema").query_db(query, data)
         
         if len(results) < 1:
             return False
@@ -43,7 +43,7 @@ class User:
     @classmethod
     def get_by_id(cls, data):
         query = "SELECT * FROM users WHERE id = %(id)s;"
-        results = connectToMySQL("logregschema").query_db(query,data)
+        results = connectToMySQL("recipe_schema").query_db(query,data)
         
         if len(results) < 1:
             return False
@@ -55,7 +55,7 @@ class User:
         query = "INSERT INTO users (first_name, last_name, email, password, created_at, updated_at) VALUES (%(first_name)s, %(last_name)s, %(email)s, %(password)s, NOW(), NOW());"
         
         #query returns the ID of the newly created user
-        return connectToMySQL("logregschema").query_db(query, data)
+        return connectToMySQL("recipe_schema").query_db(query, data)
         
     
     
@@ -63,11 +63,11 @@ class User:
     def register_validator(post_data):
         is_valid = True
         
-        if len(post_data["first_name"]):
+        if len(post_data["first_name"]) < 2:
             flash("First Name must be at least 2 characters")
             is_valid = False
         
-        if len(post_data["last_name"]):
+        if len(post_data["last_name"]) < 2:
             flash("Last Name must be at least 2 characters")
             is_valid = False
 
@@ -75,6 +75,13 @@ class User:
         if not EMAIL_REGEX.match(post_data['email']): 
             flash("Invalid email address!")
             is_valid = False
+            
+        # flash message if email has already been registered
+        else:
+            user = User.get_by_email({"email": post_data['email']})
+            if user:
+                flash("Email is already in use!")
+                is_valid = False
             
         if len(post_data["password"]) < 8:
             flash("Password must be at least 8 characters")
