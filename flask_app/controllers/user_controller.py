@@ -40,7 +40,7 @@ def login():
     
     # if inputs valid, get user from database
     # user is an object
-    user = User.get_by_id({"email": request.form["email"]})
+    user = User.get_by_email({"email": request.form["email"]})
 
     # to access the id, use user.id
     session["uuid"] = user.id
