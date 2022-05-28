@@ -10,12 +10,10 @@ def dashboard():
     if "uuid" not in session:
         return redirect("/")
     
-    return render_template(
-
-        
+    return render_template(  
         "dashboard.html",
         logged_in_user = User.get_by_id({"id": session["uuid"]}),
-        all_recipes = Recipe.get_all()
+        all_food_recipes = Recipe.get_all()
         )
     
 @app.route("/recipes/new")
