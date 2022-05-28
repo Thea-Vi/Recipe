@@ -8,6 +8,11 @@ bycrypt = Bcrypt(app)
 
 @app.route("/")
 def index():
+    
+    if "uuid" in session:
+        return redirect("/dashboard")
+
+    
     return render_template("index.html")
 
 
@@ -54,7 +59,3 @@ def logout():
     
     return redirect("/")
 
-@app.route("/dashboard")
-def dashboard():
-    
-    return render_template("dashboard.html", user = User.get_by_id({"id": session["uuid"]}))
